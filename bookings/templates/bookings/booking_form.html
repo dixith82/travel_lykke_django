@@ -1,0 +1,15 @@
+{% extends 'bookings/base.html' %}
+{% block content %}
+  <h3 class="mb-3">Book: {{ travel.get_type_display }} — {{ travel.source }} → {{ travel.destination }}</h3>
+  <ul class="list-group mb-3">
+    <li class="list-group-item">Departure: {{ travel.departure_datetime|date:"Y-m-d H:i" }}</li>
+    <li class="list-group-item">Price per seat: ₹ {{ travel.price }}</li>
+    <li class="list-group-item">Seats available: {{ travel.available_seats }}</li>
+  </ul>
+  <form method="post" class="card card-body shadow-sm">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-primary" {% if travel.available_seats == 0 %}disabled{% endif %}>Confirm Booking</button>
+    <a class="btn btn-light" href="{% url 'travel-options' %}">Back</a>
+  </form>
+{% endblock %}

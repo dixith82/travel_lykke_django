@@ -1,0 +1,54 @@
+{% extends 'bookings/base.html' %}
+{% block content %}
+  <h2 class="mb-3">Available Travel Options</h2>
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-md-2">
+      <select name="type" class="form-select">
+        <option value="">Any Type</option>
+        <option value="FLIGHT" {% if request.GET.type == 'FLIGHT' %}selected{% endif %}>Flight</option>
+        <option value="TRAIN" {% if request.GET.type == 'TRAIN' %}selected{% endif %}>Train</option>
+        <option value="BUS" {% if request.GET.type == 'BUS' %}selected{% endif %}>Bus</option>
+      </select>
+    </div>
+    <div class="col-md-3"><input name="source" value="{{ request.GET.source }}" class="form-control" placeholder="Source"></div>
+    <div class="col-md-3"><input name="destination" value="{{ request.GET.destination }}" class="form-control" placeholder="Destination"></div>
+    <div class="col-md-3"><input name="date" value="{{ request.GET.date }}" type="date" class="form-control"></div>
+    <div class="col-md-1"><button class="btn btn-primary w-100">Filter</button></div>
+  </form>
+  <div class="table-responsive">
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Type</th>
+        <th>Route</th>
+        <th>Departure</th>
+        <th>Price</th>
+        <th>Seats</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in options %}
+      <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.get_type_display }}</td>
+        <td>{{ t.source }} → {{ t.destination }}</td>
+        <td>{{ t.departure_datetime|date:"Y-m-d H:i" }}</td>
+        <td>₹ {{ t.price }}</td>
+        <td>{{ t.available_seats }}</td>
+        <td>
+          {% if user.is_authenticated %}
+            <a class="btn btn-sm btn-success {% if t.available_seats == 0 %}disabled{% endif %}" href="{% url 'book-option' t.id %}">Book</a>
+          {% else %}
+            <a class="btn btn-sm btn-outline-primary" href="{% url 'login' %}">Login to Book</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="7" class="text-center py-4">No options match your filters.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  </div>
+{% endblock %}
